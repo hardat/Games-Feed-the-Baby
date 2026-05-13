@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Baby Dash 🍼</title>
+<title>Baby Watch 🍼</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@600;700;800;900&display=swap');
 :root{
@@ -12,13 +12,13 @@
   --floor:#f5e6c8;--wall:#ffe8d0;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{width:100%;height:100%;background:#e8d5b0;display:flex;justify-content:center;overflow:hidden;font-family:'Nunito',sans-serif;touch-action:none;}
-#app{width:100%;max-width:440px;height:100dvh;position:relative;overflow:hidden;background:#f5e6c8;}
+html,body{width:100%;height:100%;background:#e8e8e8;display:flex;justify-content:center;overflow:hidden;font-family:'Nunito',sans-serif;touch-action:none;}
+#app{width:100%;max-width:440px;height:100dvh;position:relative;overflow:hidden;background:#fff;}
 #gc{display:block;width:100%;height:100%;}
 
 /* HUD */
 #hud{position:absolute;top:0;left:0;right:0;padding:7px 10px 5px;display:flex;align-items:center;gap:7px;
-  background:linear-gradient(180deg,rgba(255,248,235,0.98) 75%,rgba(255,248,235,0) 100%);
+  background:linear-gradient(180deg,rgba(255,255,255,0.99) 75%,rgba(255,255,255,0) 100%);
   pointer-events:none;z-index:10;}
 .hud-score{font-family:'Fredoka One',cursive;font-size:1.25rem;color:var(--text);white-space:nowrap;}
 .energy-wrap{flex:1;display:flex;flex-direction:column;gap:2px;}
@@ -72,14 +72,19 @@ canvas.life-btl.lost{opacity:.25;filter:grayscale(.8);}
   padding:9px;font-size:.88rem;font-weight:800;cursor:pointer;margin-bottom:7px;-webkit-appearance:none;}
 .btn-s:active{background:#fff5ee;}
 
-/* Share buttons */
-.share-row{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;}
-.share-btn{border:none;border-radius:14px;padding:9px 13px;font-size:.78rem;font-weight:800;cursor:pointer;
-  display:flex;align-items:center;gap:5px;-webkit-appearance:none;transition:transform .1s;}
-.share-btn:active{transform:scale(.95);}
+/* Share buttons — MedCrush style big icon squares */
+.share-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;}
+.share-btn{
+  border:none;border-radius:18px;padding:0;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:5px;width:72px;height:68px;font-size:.68rem;font-weight:800;
+  -webkit-appearance:none;transition:transform .12s,box-shadow .12s;
+  box-shadow:0 4px 12px rgba(0,0,0,.18);letter-spacing:.3px;}
+.share-btn:active{transform:scale(.93);box-shadow:0 2px 6px rgba(0,0,0,.15);}
+.share-btn svg{display:block;}
 .sh-wa{background:#25d366;color:#fff;}
 .sh-tg{background:#2ca5e0;color:#fff;}
-.sh-copy{background:#f0e8dc;color:#5d4037;}
+.sh-copy{background:#4a4a5a;color:#fff;}
 .sh-native{background:#ff784e;color:#fff;}
 
 /* Leaderboard */
@@ -164,7 +169,7 @@ canvas.life-btl.lost{opacity:.25;filter:grayscale(.8);}
 <div class="ov open" id="ov-welcome">
   <div class="card">
     <span class="card-emoji" style="animation:bba 1s ease-in-out infinite">👶</span>
-    <div class="card-title">Baby Dash!</div>
+    <div class="card-title">Baby Watch! 👶</div>
     <div class="card-sub">Baby crawls through 3 lanes at home! Collect healthy food, dodge junk. You have <b>3 elixir lives</b>. Lose all 3 or drain energy = game over!</div>
     <div class="food-preview">
       <span class="fp g">🍎 Apple</span><span class="fp g">🥦 Veggie</span>
@@ -205,10 +210,22 @@ canvas.life-btl.lost{opacity:.25;filter:grayscale(.8);}
     <div id="go-badge"></div>
     <!-- Share row -->
     <div class="share-row" id="share-row" style="display:none">
-      <button class="share-btn sh-wa" onclick="shareScore('wa')">WhatsApp</button>
-      <button class="share-btn sh-tg" onclick="shareScore('tg')">Telegram</button>
-      <button class="share-btn sh-copy" onclick="shareScore('copy')">📋 Copy</button>
-      <button class="share-btn sh-native" onclick="shareScore('native')" id="sh-native-btn" style="display:none">↗ Share</button>
+      <button class="share-btn sh-tg" onclick="shareScore('tg')">
+        <svg width="28" height="28" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="24" fill="#2ca5e0"/><path d="M10 23.5l25-10-4 22-7-7-5 4 1-8 15-13-17 10-8-1z" fill="#fff"/></svg>
+        Telegram
+      </button>
+      <button class="share-btn sh-wa" onclick="shareScore('wa')">
+        <svg width="28" height="28" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="24" fill="#25d366"/><path d="M34 29c-1-1-3-2-4-1l-2 1c-3-1-6-4-7-7l1-2c1-1 0-3-1-4l-3-4c-1-1-2-1-3 0-2 2-3 4-2 7 1 4 5 9 9 11 3 1 7 2 9 0 1-1 1-3 0-4l-2-1 5 4z" fill="#fff"/></svg>
+        WhatsApp
+      </button>
+      <button class="share-btn sh-copy" onclick="shareScore('copy')">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="8" y="8" width="13" height="13" rx="2" stroke="#fff" stroke-width="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2" stroke="#fff" stroke-width="2"/></svg>
+        Copy Link
+      </button>
+      <button class="share-btn sh-native" onclick="shareScore('native')" id="sh-native-btn" style="display:none">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Share
+      </button>
     </div>
     <div id="save-wrap">
       <div style="font-size:.76rem;font-weight:800;color:#7d6258;margin-bottom:8px;">Save to leaderboard!</div>
@@ -249,7 +266,7 @@ canvas.life-btl.lost{opacity:.25;filter:grayscale(.8);}
 <!-- END: TIRED -->
 <div class="ov" id="ov-tired">
   <div class="end-card end-card-tired">
-    <div id="tired-canvas-wrap" style="margin:0 auto 6px;"></div>
+    <div style="font-size:3.5rem;margin:6px 0 4px;text-align:center;">😭</div>
     <div class="end-title" style="color:#1565c0;">Hungry Baby! 😢</div>
     <div class="end-msg msg-tired">
       <b>Oh no! Baby ran out of energy and is crying to be fed!</b><br><br>
@@ -257,9 +274,9 @@ canvas.life-btl.lost{opacity:.25;filter:grayscale(.8);}
     </div>
     <div id="tired-score-row" class="stat-row"></div>
     <div class="share-row">
-      <button class="share-btn sh-wa" onclick="shareEndScore('wa')">WhatsApp</button>
-      <button class="share-btn sh-tg" onclick="shareEndScore('tg')">Telegram</button>
-      <button class="share-btn sh-copy" onclick="shareEndScore('copy')">📋 Copy</button>
+      <button class="share-btn sh-tg" onclick="shareEndScore('tg')"><svg width="26" height="26" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="24" fill="#2ca5e0"/><path d="M10 23.5l25-10-4 22-7-7-5 4 1-8 15-13-17 10-8-1z" fill="#fff"/></svg>Telegram</button>
+      <button class="share-btn sh-wa" onclick="shareEndScore('wa')"><svg width="26" height="26" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="24" fill="#25d366"/><path d="M34 29c-1-1-3-2-4-1l-2 1c-3-1-6-4-7-7l1-2c1-1 0-3-1-4l-3-4c-1-1-2-1-3 0-2 2-3 4-2 7 1 4 5 9 9 11 3 1 7 2 9 0 1-1 1-3 0-4l-2-1 5 4z" fill="#fff"/></svg>WhatsApp</button>
+      <button class="share-btn sh-copy" onclick="shareEndScore('copy')"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="8" y="8" width="13" height="13" rx="2" stroke="#fff" stroke-width="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2" stroke="#fff" stroke-width="2"/></svg>Copy</button>
     </div>
     <button class="btn-p" onclick="startGame()" style="background:linear-gradient(135deg,#42a5f5,#1e88e5);box-shadow:0 5px 14px rgba(30,136,229,.4);">▶ Feed Baby Again!</button>
     <button class="btn-s" onclick="showOv('ov-welcome')">🏠 Home</button>
@@ -269,7 +286,7 @@ canvas.life-btl.lost{opacity:.25;filter:grayscale(.8);}
 <!-- END: SICK -->
 <div class="ov" id="ov-sick">
   <div class="end-card end-card-sick">
-    <div id="sick-canvas-wrap" style="margin:0 auto 6px;"></div>
+    <div style="font-size:3.5rem;margin:6px 0 4px;text-align:center;">🤒</div>
     <div class="end-title" style="color:#6a1b9a;">Tummy Trouble! 🤒</div>
     <div class="end-msg msg-sick">
       <b>Baby ate too much junk food and has a grumpy, bloated tummy!</b><br><br>
@@ -277,9 +294,9 @@ canvas.life-btl.lost{opacity:.25;filter:grayscale(.8);}
     </div>
     <div id="sick-score-row" class="stat-row"></div>
     <div class="share-row">
-      <button class="share-btn sh-wa" onclick="shareEndScore('wa')">WhatsApp</button>
-      <button class="share-btn sh-tg" onclick="shareEndScore('tg')">Telegram</button>
-      <button class="share-btn sh-copy" onclick="shareEndScore('copy')">📋 Copy</button>
+      <button class="share-btn sh-tg" onclick="shareEndScore('tg')"><svg width="26" height="26" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="24" fill="#2ca5e0"/><path d="M10 23.5l25-10-4 22-7-7-5 4 1-8 15-13-17 10-8-1z" fill="#fff"/></svg>Telegram</button>
+      <button class="share-btn sh-wa" onclick="shareEndScore('wa')"><svg width="26" height="26" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="24" fill="#25d366"/><path d="M34 29c-1-1-3-2-4-1l-2 1c-3-1-6-4-7-7l1-2c1-1 0-3-1-4l-3-4c-1-1-2-1-3 0-2 2-3 4-2 7 1 4 5 9 9 11 3 1 7 2 9 0 1-1 1-3 0-4l-2-1 5 4z" fill="#fff"/></svg>WhatsApp</button>
+      <button class="share-btn sh-copy" onclick="shareEndScore('copy')"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="8" y="8" width="13" height="13" rx="2" stroke="#fff" stroke-width="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2" stroke="#fff" stroke-width="2"/></svg>Copy</button>
     </div>
     <button class="btn-p" onclick="startGame()" style="background:linear-gradient(135deg,#ba68c8,#8e24aa);box-shadow:0 5px 14px rgba(142,36,170,.4);">▶ Try Healthier Food!</button>
     <button class="btn-s" onclick="showOv('ov-welcome')">🏠 Home</button>
@@ -289,7 +306,7 @@ canvas.life-btl.lost{opacity:.25;filter:grayscale(.8);}
 
 <script>
 // ═══════════════════════════════════════════════════
-const GAS_URL='https://script.google.com/macros/s/AKfycbwMGdx0OOB8oeHhlJRO-1pnOQ-X7M29f7JD3HFEjCG5r1bCTNSiSLCE2yD6T8Qe4w/exec';
+const GAS_URL='https://script.google.com/macros/s/AKfycbz-al-DyFrBMHAt8knt6UalkYtDHTQm2n9yny9NWg75okkB_altQWd2P-pYbWC0R4w16w/exec';
 const GAME_URL=window.location.href;
 
 const GOOD=[
@@ -552,56 +569,70 @@ function draw(){
   drawStatus();
 }
 
-// Home floor — warm indoor environment
+// Home floor — clean white indoor environment
 function drawHome(){
-  // Wall (upper portion)
+  // Wall (upper portion) — soft white
   const wallH=CH*0.22;
-  const wallGrad=ctx.createLinearGradient(0,0,0,wallH);
-  wallGrad.addColorStop(0,'#fce4c8');wallGrad.addColorStop(1,'#ffd4a8');
-  ctx.fillStyle=wallGrad;ctx.fillRect(0,0,CW,wallH);
-
-  // Wall baseboard
-  ctx.fillStyle='#e8c89a';ctx.fillRect(0,wallH-4,CW,8);
-
-  // Floor (warm wood planks)
-  const floorGrad=ctx.createLinearGradient(0,wallH,0,CH);
-  floorGrad.addColorStop(0,'#f0d4a0');floorGrad.addColorStop(1,'#e8c890');
-  ctx.fillStyle=floorGrad;ctx.fillRect(0,wallH,CW,CH-wallH);
-
-  // Wood plank lines (horizontal)
-  ctx.strokeStyle='rgba(180,130,70,0.25)';ctx.lineWidth=1;
-  const plankH=32;
-  for(let i=0;i<Math.ceil(CH/plankH)+2;i++){
-    const y=wallH+(i*plankH-G.floorOff%plankH);
+  ctx.fillStyle='#f8f8f8';ctx.fillRect(0,0,CW,wallH);
+  // Subtle wall texture — very light horizontal lines
+  ctx.strokeStyle='rgba(0,0,0,0.04)';ctx.lineWidth=1;
+  for(let i=0;i<6;i++){
+    const y=i*(wallH/5);
     ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(CW,y);ctx.stroke();
   }
-  // Plank vertical dividers (staggered)
-  ctx.strokeStyle='rgba(180,130,70,0.15)';
-  const divW=CW/3;
-  for(let col=0;col<3;col++){
-    const baseX=col*divW;
-    for(let i=0;i<Math.ceil(CH/plankH)+2;i++){
-      const y=wallH+(i*plankH-G.floorOff%plankH);
-      const offset=(i+col)%2===0?divW*.5:0;
-      const x=baseX+offset;
-      ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y+plankH);ctx.stroke();
+  // Wall baseboard
+  ctx.fillStyle='#e8e8e8';ctx.fillRect(0,wallH-5,CW,9);
+  ctx.fillStyle='#d8d8d8';ctx.fillRect(0,wallH-2,CW,2);
+
+  // Floor — clean white tiles
+  ctx.fillStyle='#ffffff';ctx.fillRect(0,wallH,CW,CH-wallH);
+
+  // White floor tiles — clean square grid
+  const tileH=60,tileW=CW/3;
+  ctx.strokeStyle='rgba(0,0,0,0.07)';ctx.lineWidth=1;
+  // Horizontal grout lines
+  for(let i=0;i<Math.ceil(CH/tileH)+2;i++){
+    const y=wallH+(i*tileH-G.floorOff%tileH);
+    ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(CW,y);ctx.stroke();
+  }
+  // Vertical grout lines
+  for(let col=1;col<3;col++){
+    ctx.beginPath();ctx.moveTo(col*tileW,wallH);ctx.lineTo(col*tileW,CH);ctx.stroke();
+  }
+  // Tile grout offset for odd rows (brick-pattern)
+  ctx.strokeStyle='rgba(0,0,0,0.04)';
+  for(let i=0;i<Math.ceil(CH/tileH)+2;i++){
+    const y=wallH+(i*tileH-G.floorOff%tileH);
+    const offset=(i%2===0)?tileW*.5:0;
+    if(offset){
+      ctx.beginPath();ctx.moveTo(offset,y);ctx.lineTo(offset,y+tileH);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(offset+tileW,y);ctx.lineTo(offset+tileW,y+tileH);ctx.stroke();
+    }
+  }
+  // Subtle tile sheen
+  ctx.fillStyle='rgba(255,255,255,0.5)';
+  for(let i=0;i<Math.ceil(CH/tileH)+2;i++){
+    for(let col=0;col<3;col++){
+      const ty=wallH+(i*tileH-G.floorOff%tileH)+4;
+      const tx=col*tileW+6;
+      ctx.fillRect(tx,ty,tileW-12,4);
     }
   }
 
-  // Wall side panels (give depth)
+  // Wall side panels
   const panelW=RX*0.9;
-  ctx.fillStyle='rgba(200,150,90,0.1)';
+  ctx.fillStyle='rgba(230,230,230,0.5)';
   ctx.fillRect(0,0,panelW,CH);
   ctx.fillRect(CW-panelW,0,panelW,CH);
 
-  // Skirting board / lane guides — subtle floor runners
-  ctx.fillStyle='rgba(210,160,90,0.3)';
-  ctx.fillRect(RX,wallH,2,CH-wallH);
-  ctx.fillRect(RX+RW-2,wallH,2,CH-wallH);
-  // Lane dividers (subtle carpet strip)
-  ctx.fillStyle='rgba(200,150,80,0.18)';
-  ctx.fillRect(RX+LW-1,wallH,2,CH-wallH);
-  ctx.fillRect(RX+LW*2-1,wallH,2,CH-wallH);
+  // Lane edge guides
+  ctx.fillStyle='rgba(0,0,0,0.08)';
+  ctx.fillRect(RX,wallH,1.5,CH-wallH);
+  ctx.fillRect(RX+RW-1.5,wallH,1.5,CH-wallH);
+  // Lane center dividers
+  ctx.fillStyle='rgba(0,0,0,0.05)';
+  ctx.fillRect(RX+LW-1,wallH,1.5,CH-wallH);
+  ctx.fillRect(RX+LW*2-1,wallH,1.5,CH-wallH);
 
   // Decor: plants on left, toys on right
   G.decor.forEach(d=>{
@@ -611,16 +642,25 @@ function drawHome(){
   ctx.textAlign='left';
 }
 
-// Food — pure big emoji, bobbing
+// Food — static, large, with clear good/bad indicator dot
 function drawItems(){
-  const sz=Math.round(LW*0.62);
+  const sz=Math.round(LW*0.64);
   ctx.textAlign='center';
   G.items.forEach(it=>{
-    const bob=Math.sin(it.fl+G.frame*.06)*5;
+    const cy=it.y+sz*0.38;
+    // Subtle circular backdrop so emoji pops on white floor
+    ctx.fillStyle=it.good?'rgba(200,245,215,0.75)':'rgba(255,215,215,0.75)';
+    ctx.beginPath();ctx.arc(it.x,cy-sz*0.22,sz*0.52,0,Math.PI*2);ctx.fill();
+    // Good/bad indicator ring
+    ctx.strokeStyle=it.good?'rgba(46,160,90,0.5)':'rgba(200,40,40,0.5)';
+    ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(it.x,cy-sz*0.22,sz*0.54,0,Math.PI*2);ctx.stroke();
+    // Emoji
     ctx.font=sz+'px serif';
-    ctx.fillText(it.emoji,it.x,it.y+bob+sz*0.38);
+    ctx.fillText(it.emoji,it.x,cy);
   });
   ctx.textAlign='left';
+  ctx.lineWidth=1;
 }
 
 function drawParticles(){
@@ -841,10 +881,6 @@ function showEndScreen(r){if(r==='tired')showTiredScreen();else showSickScreen()
 
 // ── TIRED BABY ───────────────────────────────────────
 function showTiredScreen(){
-  const wrap=document.getElementById('tired-canvas-wrap');
-  wrap.innerHTML='';
-  const c=makeEndCanvas(200,185);wrap.appendChild(c);
-  drawTiredBaby(c);
   document.getElementById('tired-score-row').innerHTML=scoreRowHTML();
   showOv('ov-tired');
   playCrySound();
@@ -970,10 +1006,6 @@ function drawTiredBaby(canvas){
 
 // ── SICK BABY ────────────────────────────────────────
 function showSickScreen(){
-  const wrap=document.getElementById('sick-canvas-wrap');
-  wrap.innerHTML='';
-  const c=makeEndCanvas(200,190);wrap.appendChild(c);
-  drawSickBaby(c);
   document.getElementById('sick-score-row').innerHTML=scoreRowHTML();
   showOv('ov-sick');
   playGrumpySound();
@@ -1107,7 +1139,7 @@ function scoreRowHTML(){
 function buildShareText(){
   const score=Math.floor(G?G.score:0);
   const dist=Math.floor(G?G.dist:0);
-  return`🍼 Baby Dash! I scored ${score.toLocaleString()} pts over ${dist}m! Can you beat me? Play here: ${GAME_URL}`;
+  return`👶 Baby Watch! I scored ${score.toLocaleString()} pts over ${dist}m! Can you beat me? Play here: ${GAME_URL}`;
 }
 
 function shareScore(method){
@@ -1116,7 +1148,7 @@ function shareScore(method){
   if(method==='wa') window.open(`https://wa.me/?text=${enc}`,'_blank');
   else if(method==='tg') window.open(`https://t.me/share/url?url=${encodeURIComponent(GAME_URL)}&text=${encodeURIComponent(text)}`,'_blank');
   else if(method==='copy'){navigator.clipboard.writeText(text).then(()=>showToast('Copied to clipboard! 📋')).catch(()=>showToast('Copy not supported — try manually'));}
-  else if(method==='native'&&navigator.share){navigator.share({title:'Baby Dash',text:text,url:GAME_URL});}
+  else if(method==='native'&&navigator.share){navigator.share({title:'Baby Watch',text:text,url:GAME_URL});}
 }
 function shareEndScore(method){shareScore(method);}
 
@@ -1174,8 +1206,8 @@ function setEB(v){
 // ── LEADERBOARD ──────────────────────────────────────
 let lbCache=null,lbTabCur='daily';
 async function fetchLB(){
-  try{const r=await fetch(GAS_URL+'?action=leaderboard',{cache:'no-cache'});lbCache=await r.json();return lbCache;}
-  catch(e){return[];}
+  try{const r=await fetch(GAS_URL,{cache:'no-cache'});lbCache=await r.json();return lbCache;}
+  catch(e){return null;}
 }
 async function openLB(){
   showOv('ov-lb');
@@ -1188,21 +1220,17 @@ function lbTab(tab,el){
   renderLB(tab,lbCache||[]);
 }
 function renderLB(tab,raw){
-  const now=new Date();
-  const flt=(raw||[]).filter(r=>{
-    const d=new Date(r.timestamp);
-    if(tab==='daily')return d.toDateString()===now.toDateString();
-    if(tab==='weekly'){const w=new Date(now);w.setDate(now.getDate()-7);return d>=w;}
-    return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
-  }).sort((a,b)=>b.score-a.score).slice(0,20);
+  // MedCrush GAS returns {daily:[],weekly:[],monthly:[]} already aggregated
+  const data=raw&&raw[tab]?raw[tab]:[];
+  const flt=data.slice(0,20);
   const ct=document.getElementById('lb-content');
   if(!flt.length){ct.innerHTML='<div class="lb-empty">No scores yet for this period!<br>Be the first 🏆</div>';return;}
   const M=['🥇','🥈','🥉'];
-  let h='<table class="lb-tbl"><thead><tr><th>#</th><th>Name</th><th>Score</th><th>Dist</th></tr></thead><tbody>';
+  let hh='<table class="lb-tbl"><thead><tr><th>#</th><th>Name</th><th>Score</th></tr></thead><tbody>';
   flt.forEach((r,i)=>{
-    h+=`<tr class="${i<3?'r'+(i+1):''}"><td class="lb-rank">${M[i]||i+1}</td><td>${esc(r.name)}</td><td>${Number(r.score).toLocaleString()}</td><td>${r.distance?r.distance+'m':'-'}</td></tr>`;
+    hh+=`<tr class="${i<3?'r'+(i+1):''}"><td class="lb-rank">${M[i]||i+1}</td><td>${esc(r.name)}</td><td>${Number(r.score).toLocaleString()}</td></tr>`;
   });
-  h+='</tbody></table>';ct.innerHTML=h;
+  hh+='</tbody></table>';ct.innerHTML=hh;
 }
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 
@@ -1211,21 +1239,26 @@ async function submitScore(){
   const name=document.getElementById('inp-name').value.trim();
   const phone=document.getElementById('inp-phone').value.trim();
   if(!name){document.getElementById('err-name').style.display='block';return;}
+  if(!phone){document.getElementById('err-name').textContent='Phone required for leaderboard';document.getElementById('err-name').style.display='block';return;}
   document.getElementById('err-name').style.display='none';
   localStorage.setItem('bdr_name',name);
-  if(phone)localStorage.setItem('bdr_phone',phone);
+  localStorage.setItem('bdr_phone',phone);
   const btn=document.getElementById('saveBtn');btn.disabled=true;btn.textContent='⏳ Saving...';
-  const payload={name,phone,score:Math.floor(G.score),distance:Math.floor(G.dist),goodEaten:G.goodEaten,badEaten:G.badEaten,timestamp:new Date().toISOString()};
+  const score=Math.floor(G.score);
+  // Use GET params — same pattern as MedCrush
+  const url=GAS_URL+'?action=save&name='+encodeURIComponent(name)+'&phone='+encodeURIComponent(phone)+'&score='+score;
   try{
-    await fetch(GAS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const res=await fetch(url);
+    const data=await res.json();
+    if(data.status!=='ok') throw new Error(data.msg||'Save failed');
     document.getElementById('save-wrap').style.display='none';
     document.getElementById('save-ok').style.display='block';
     document.getElementById('share-row').style.display='flex';
     if(navigator.share) document.getElementById('sh-native-btn').style.display='';
     setTimeout(async()=>{
       const lb=await fetchLB();
-      const all=(lb||[]).map(r=>r.score).sort((a,b)=>b-a);
-      const rank=all.filter(s=>s>payload.score).length+1;
+      const all=((lb&&lb.daily)||[]).map(r=>r.score).sort((a,b)=>b-a);
+      const rank=all.filter(s=>s>score).length+1;
       const ri=document.getElementById('rank-info');ri.style.display='block';
       ri.innerHTML=`<div style="background:#e8f5e9;border-radius:10px;padding:8px;font-weight:800;color:#2e7d32;font-size:.82rem;">🏅 Daily Rank: <span style="font-family:'Fredoka One',cursive;font-size:1.25rem;">#${rank}</span></div>`;
     },1500);
