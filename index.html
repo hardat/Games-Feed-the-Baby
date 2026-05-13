@@ -304,21 +304,47 @@ const BAD=[
 ];
 
 // ── SPEED SYSTEM ──────────────────────────────────────────
-// Distance thresholds and corresponding speeds (px/frame at 60fps)
-// Sweet spot: 3.0-5.0 px/frame on a ~400px wide screen
+// Speed progression (px/frame at 60fps, lane width ~90px on 360px screen)
+//
+// Version comparison:
+// v1 (Side-scroller):  fixed baseSpeed=4, speedMult 1.0→3.0 (frame-based), effective 4–12 px/f
+// v2 (3-lane attempt): baseSpeed=5, speedMult 1.0→3.2 (frame-based), effective 5–16 px/f (too fast)
+// v3 current:          distance-based table below — sweet spot 3.0–6.2 px/f
+//
+// Rule: speed steps trigger every ~300–600m distance (not time), so faster players
+// feel the ramp sooner while slower players get more runway. Max caps at 6.2 to keep
+// reaction time above ~400ms per lane width on a phone screen.
+//
+// | Distance | Speed | Multiplier equiv | Feel            |
+// |----------|-------|-----------------|-----------------|
+// | 0m       | 3.0   | ×1.0            | Gentle start    |
+// | 300m     | 3.4   | ×1.13           | Warm-up done    |
+// | 700m     | 3.9   | ×1.30           | Comfortable     |
+// | 1200m    | 4.4   | ×1.47           | Getting real    |
+// | 1800m    | 4.9   | ×1.63           | Challenging     |
+// | 2500m    | 5.4   | ×1.80           | Fast but fair   |
+// | 3500m    | 5.8   | ×1.93           | Expert          |
+// | 5000m    | 6.2   | ×2.07           | Max — playable  |
 const SPEED_TABLE=[
-  {dist:0,    spd:3.0},   // Gentle start — food is very readable
-  {dist:300,  spd:3.4},   // Slight ramp after seeing a few items
-  {dist:700,  spd:3.9},   // Comfortable cruise
-  {dist:1200, spd:4.4},   // Getting interesting
-  {dist:1800, spd:4.9},   // Challenging
-  {dist:2500, spd:5.4},   // Fast but fair
-  {dist:3500, spd:5.8},   // Expert
-  {dist:5000, spd:6.2},   // Max — maintains playability
+  {dist:0,    spd:3.0},
+  {dist:300,  spd:3.4},
+  {dist:700,  spd:3.9},
+  {dist:1200, spd:4.4},
+  {dist:1800, spd:4.9},
+  {dist:2500, spd:5.4},
+  {dist:3500, spd:5.8},
+  {dist:5000, spd:6.2},
 ];
+let _lastSpeedIdx=-1;
 function getSpeed(dist){
-  let spd=SPEED_TABLE[0].spd;
-  for(const t of SPEED_TABLE) if(dist>=t.dist) spd=t.spd;
+  let spd=SPEED_TABLE[0].spd, idx=0;
+  for(let i=0;i<SPEED_TABLE.length;i++) if(dist>=SPEED_TABLE[i].dist){spd=SPEED_TABLE[i].spd;idx=i;}
+  // Show speed change in HUD when tier changes
+  if(idx!==_lastSpeedIdx){
+    _lastSpeedIdx=idx;
+    const mult=(spd/3.0).toFixed(1);
+    document.getElementById('hud-dist').textContent=Math.floor(dist)+'m ×'+mult;
+  }
   return spd;
 }
 
@@ -455,7 +481,7 @@ function update(){
     G.score+=Math.floor(spd*0.35);
     document.getElementById('scoreDisp').textContent=Math.floor(G.score);
     document.getElementById('hud-dist').textContent=Math.floor(G.dist)+'m';
-    document.getElementById('hud-speed').textContent='×'+spd.toFixed(1);
+    document.getElementById('hud-speed').textContent='×'+(spd/3.0).toFixed(1);
   }
 
   // 2000m bonus life
@@ -668,27 +694,16 @@ function drawRoad(){
   ctx.setLineDash([]);ctx.lineDashOffset=0;
 }
 
-// ── FOOD ITEMS — Large, vivid, readable ──────────────────
+// ── FOOD ITEMS — Pure emoji, no rings, no glows, no backgrounds ──
 function drawItems(){
+  const sz=Math.round(LW*0.58);
   ctx.textAlign='center';
   G.items.forEach(it=>{
     const bob=Math.sin(it.fl+G.frame*.06)*5;
-    const x=it.x, y=it.y+bob;
-
-    ctx.save();
-    // Subtle drop shadow so emoji pops from road
-    ctx.shadowColor='rgba(0,0,0,0.22)';
-    ctx.shadowBlur=6;
-    ctx.shadowOffsetY=3;
-    // Big emoji — clean, no backgrounds, no rings
-    ctx.font=Math.round(LW*0.52)+'px serif';
-    ctx.textAlign='center';
-    ctx.fillText(it.emoji,x,y+LW*.22);
-    ctx.shadowBlur=0;ctx.shadowOffsetY=0;
-    ctx.restore();
+    ctx.font=sz+'px serif';
+    ctx.fillText(it.emoji, it.x, it.y+bob+sz*0.38);
   });
   ctx.textAlign='left';
-  ctx.shadowBlur=0;
 }
 
 // ── BABY (top-down crawl, smaller) ───────────────────────
@@ -1066,95 +1081,110 @@ function showSickScreen(){
 
 function drawSickBaby(canvas){
   const c=canvas.getContext('2d'),W=canvas.width,H=canvas.height;
-  let frame=0;
-
+  let frame=0,rafId;
   function animLoop(){
     c.clearRect(0,0,W,H);
+    const cx=W/2, groundY=H-10;
+    const bloatP=Math.sin(frame*.045)*0.07;
 
-    // Bloat pulse
-    const bloat=1+Math.sin(frame*.05)*.07;
-    c.save();c.translate(W/2,H/2+10);c.scale(1,bloat);c.translate(-W/2,-H/2-10);
+    // LEGS
+    c.fillStyle='#f5cba7';
+    c.beginPath();c.ellipse(cx-16,groundY-28,9,15,-.12,0,Math.PI*2);c.fill();
+    c.beginPath();c.ellipse(cx+16,groundY-28,9,15,.12,0,Math.PI*2);c.fill();
+    c.fillStyle='#795548';
+    c.beginPath();c.ellipse(cx-17,groundY-14,9,6,0,0,Math.PI*2);c.fill();
+    c.beginPath();c.ellipse(cx+17,groundY-14,9,6,0,0,Math.PI*2);c.fill();
 
-    // Bloated body — wider than normal
-    const bx=W/2,by=H/2+12;
-    c.fillStyle='#d7c0d8'; // sickly purpleish onesie
-    c.beginPath();c.ellipse(bx,by,36,40,0,0,Math.PI*2);c.fill();
-    c.strokeStyle='rgba(0,0,0,0.1)';c.lineWidth=2;
-    c.beginPath();c.ellipse(bx,by,36,40,0,0,Math.PI*2);c.stroke();
+    // SHORTS (neutral grey)
+    c.fillStyle='#90a4ae';
+    c.beginPath();
+    c.moveTo(cx-21,groundY-60);c.lineTo(cx+21,groundY-60);
+    c.lineTo(cx+23,groundY-40);c.lineTo(cx-23,groundY-40);
+    c.closePath();c.fill();
+    c.fillStyle='#78909c';c.fillRect(cx-21,groundY-63,42,7);
+    c.strokeStyle='rgba(0,0,0,0.08)';c.lineWidth=1;
+    c.beginPath();c.moveTo(cx,groundY-57);c.lineTo(cx,groundY-40);c.stroke();
 
-    // Bloat highlight — belly bulge
-    c.fillStyle='rgba(255,200,220,0.4)';
-    c.beginPath();c.ellipse(bx+5,by+5,20,18,0.3,0,Math.PI*2);c.fill();
+    // WHITE T-SHIRT
+    c.fillStyle='#fafafa';
+    c.beginPath();c.ellipse(cx,groundY-82,22,24,0,0,Math.PI*2);c.fill();
+    c.strokeStyle='rgba(0,0,0,0.05)';c.lineWidth=1;
+    c.beginPath();c.ellipse(cx,groundY-82,22,24,0,0,Math.PI*2);c.stroke();
+    c.strokeStyle='rgba(200,200,200,0.55)';c.lineWidth=2;
+    c.beginPath();c.arc(cx,groundY-100,7,Math.PI*.25,Math.PI*.75);c.stroke();
+    c.fillStyle='#f5f5f5';
+    c.beginPath();c.ellipse(cx-27,groundY-88,7,11,.4,0,Math.PI*2);c.fill();
+    c.beginPath();c.ellipse(cx+27,groundY-88,7,11,-.4,0,Math.PI*2);c.fill();
 
-    // Swollen belly lines (stretch marks hint)
-    c.strokeStyle='rgba(180,100,150,0.3)';c.lineWidth=1.5;
-    for(let i=-2;i<=2;i++){
-      c.beginPath();c.arc(bx+i*6,by+8,12,-Math.PI*.4,Math.PI*.4);c.stroke();
-    }
+    // BLOATED BELLY — shirt rides up, round tummy exposed
+    const bellyR=18+bloatP*8;
+    c.fillStyle='#f5cba7';
+    c.beginPath();c.ellipse(cx,groundY-64,bellyR,11+bloatP*6,0,0,Math.PI*2);c.fill();
+    c.strokeStyle='rgba(160,110,70,0.4)';c.lineWidth=1.5;
+    c.beginPath();c.arc(cx,groundY-65,3,0,Math.PI*2);c.stroke();
+    c.fillStyle='rgba(255,255,255,0.22)';
+    c.beginPath();c.ellipse(cx-5,groundY-70,6,4,.3,0,Math.PI*2);c.fill();
 
-    // Arms hanging low (uncomfortable)
-    c.fillStyle='#ffcc80';
-    c.beginPath();c.ellipse(bx-34,by+10,8,5,.3,0,Math.PI*2);c.fill();
-    c.beginPath();c.ellipse(bx+34,by+10,8,5,-.3,0,Math.PI*2);c.fill();
-    // Legs
-    c.beginPath();c.ellipse(bx-16,by+48,7,11,-.1,0,Math.PI*2);c.fill();
-    c.beginPath();c.ellipse(bx+16,by+48,7,11,.1,0,Math.PI*2);c.fill();
+    // ARMS
+    c.fillStyle='#f5cba7';
+    c.beginPath();c.ellipse(cx-25,groundY-84,6,10,.3,0,Math.PI*2);c.fill();
+    c.beginPath();c.ellipse(cx+23,groundY-78,6,9,-.2,0,Math.PI*2);c.fill();
+    c.beginPath();c.arc(cx+14,groundY-66,6,0,Math.PI*2);c.fill();
 
-    // Diaper (slightly green tinge - nappy trouble)
-    c.fillStyle='#c8e6c9';c.beginPath();c.ellipse(bx,by+38,18,13,0,0,Math.PI*2);c.fill();
-    c.strokeStyle='rgba(0,0,0,0.06)';c.lineWidth=1;c.beginPath();c.ellipse(bx,by+38,18,13,0,0,Math.PI*2);c.stroke();
-
-    c.restore();
-
-    // Head — slightly green tinge
-    const hx=W/2,hy=H/2-26;
-    const headBloat=1+Math.sin(frame*.05)*.03;
-    c.save();c.translate(hx,hy);c.scale(headBloat,headBloat);c.translate(-hx,-hy);
-    c.fillStyle='#e8d5a0'; // sickly yellow-ish
+    // HEAD
+    const hx=cx,hy=groundY-142;
+    c.fillStyle='#f5cba7';c.fillRect(hx-6,hy+22,12,11);
+    c.fillStyle='#fde8c8';
     c.beginPath();c.arc(hx,hy,30,0,Math.PI*2);c.fill();
-    c.strokeStyle='rgba(0,0,0,0.08)';c.lineWidth=1.5;c.beginPath();c.arc(hx,hy,30,0,Math.PI*2);c.stroke();
-
-    // Grumpy eyebrows
-    c.strokeStyle='#5d4037';c.lineWidth=3;c.lineCap='round';
-    c.beginPath();c.moveTo(hx-16,hy-10);c.lineTo(hx-7,hy-7);c.stroke();
-    c.beginPath();c.moveTo(hx+7,hy-7);c.lineTo(hx+16,hy-10);c.stroke();
-
-    // Small grumpy eyes
+    c.strokeStyle='rgba(0,0,0,0.05)';c.lineWidth=1;
+    c.beginPath();c.arc(hx,hy,30,0,Math.PI*2);c.stroke();
+    // Ears
+    c.fillStyle='#f5d5a8';
+    c.beginPath();c.arc(hx-29,hy+2,8,0,Math.PI*2);c.fill();
+    c.beginPath();c.arc(hx+29,hy+2,8,0,Math.PI*2);c.fill();
+    c.fillStyle='rgba(210,155,100,0.35)';
+    c.beginPath();c.arc(hx-29,hy+2,5,0,Math.PI*2);c.fill();
+    c.beginPath();c.arc(hx+29,hy+2,5,0,Math.PI*2);c.fill();
+    // Hair
+    c.fillStyle='#c8a060';
+    c.beginPath();c.ellipse(hx,hy-25,10,6,0,0,Math.PI*2);c.fill();
+    c.beginPath();c.ellipse(hx-8,hy-22,6,4,-.3,0,Math.PI*2);c.fill();
+    c.beginPath();c.ellipse(hx+8,hy-22,5,4,.3,0,Math.PI*2);c.fill();
+    // Grumpy brows
+    c.strokeStyle='#8d6e63';c.lineWidth=2.8;c.lineCap='round';
+    c.beginPath();c.moveTo(hx-17,hy-11);c.lineTo(hx-7,hy-8);c.stroke();
+    c.beginPath();c.moveTo(hx+7,hy-8);c.lineTo(hx+17,hy-11);c.stroke();
+    // Half-closed eyes
     c.fillStyle='#4e342e';
-    c.beginPath();c.arc(hx-10,hy-1,3.5,0,Math.PI*2);c.fill();
-    c.beginPath();c.arc(hx+10,hy-1,3.5,0,Math.PI*2);c.fill();
-    // Tiny swirl (dizzy) in eyes
-    c.strokeStyle='rgba(100,50,30,0.5)';c.lineWidth=1;
-    c.beginPath();c.arc(hx-10,hy-1,2,0,Math.PI*1.5);c.stroke();
-    c.beginPath();c.arc(hx+10,hy-1,2,0,Math.PI*1.5);c.stroke();
+    c.beginPath();c.arc(hx-10,hy,4,0,Math.PI*2);c.fill();
+    c.beginPath();c.arc(hx+10,hy,4,0,Math.PI*2);c.fill();
+    c.fillStyle='#fde8c8';
+    c.fillRect(hx-15,hy-4,10,4);c.fillRect(hx+5,hy-4,10,4);
+    c.fillStyle='rgba(255,255,255,0.45)';
+    c.beginPath();c.arc(hx-8,hy-1,1.2,0,Math.PI*2);c.fill();
+    c.beginPath();c.arc(hx+12,hy-1,1.2,0,Math.PI*2);c.fill();
+    // Nose
+    c.fillStyle='#f0c090';
+    c.beginPath();c.arc(hx,hy+8,4,0,Math.PI*2);c.fill();
+    // Grumpy mouth
+    c.strokeStyle='#8d5a40';c.lineWidth=2.5;c.lineCap='round';
+    c.beginPath();c.moveTo(hx-9,hy+17);c.quadraticCurveTo(hx,hy+22,hx+9,hy+17);c.stroke();
+    // Puffed cheeks
+    c.fillStyle='rgba(240,160,130,0.25)';
+    c.beginPath();c.arc(hx-19,hy+10,10,0,Math.PI*2);c.fill();
+    c.beginPath();c.arc(hx+19,hy+10,10,0,Math.PI*2);c.fill();
 
-    // Grumpy/sick mouth
-    c.strokeStyle='#5d4037';c.lineWidth=2.5;
-    c.beginPath();c.arc(hx,hy+14,7,Math.PI*.15,Math.PI*.85);c.stroke();
-
-    // Sick cheek spots (rash/discomfort)
-    c.fillStyle='rgba(200,100,100,0.3)';
-    c.beginPath();c.arc(hx-18,hy+4,8,0,Math.PI*2);c.fill();
-    c.beginPath();c.arc(hx+18,hy+4,8,0,Math.PI*2);c.fill();
-
-    c.restore();
-
-    // Floating gas/discomfort symbols
-    const bubbles=[
-      {e:'💨',r:72,off:0},{e:'🤢',r:80,off:2.1},{e:'💨',r:68,off:4.2},
-    ];
-    bubbles.forEach((b,i)=>{
-      const angle=frame*.04+b.off;
-      const pulse=Math.abs(Math.sin(frame*.08+i));
-      c.globalAlpha=0.5+pulse*.4;
-      c.font='16px serif';c.textAlign='center';
-      c.fillText(b.e,W/2+Math.cos(angle)*b.r,H/2+Math.sin(angle)*b.r*.5+5);
+    // Floating discomfort symbols
+    ['\u{1F4A8}','\u{1F623}','\u{1F4A8}'].forEach((e,i)=>{
+      const angle=frame*.038+i*(Math.PI*2/3);
+      c.globalAlpha=0.45+Math.abs(Math.sin(frame*.09+i))*.45;
+      c.font='14px serif';c.textAlign='center';
+      c.fillText(e,cx+Math.cos(angle)*74,H/2-10+Math.sin(angle)*26);
     });
     c.globalAlpha=1;c.textAlign='left';
-
-    frame++;
-    requestAnimationFrame(animLoop);
+    frame++;rafId=requestAnimationFrame(animLoop);
   }
+  canvas._stopAnim=()=>cancelAnimationFrame(rafId);
   animLoop();
 }
 
@@ -1172,22 +1202,33 @@ function getACtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitA
 function playCrySound(){
   try{
     const ac=getACtx();
-    // Gentle wah-wah cry pattern
-    const intervals=[0,0.6,1.2,1.8,2.4];
-    intervals.forEach(t=>{
+    // Subtle, realistic baby cry — wah pattern with formant filter
+    // "Waaah" = rising then falling pitch, filtered for softness
+    const master=ac.createGain();
+    master.gain.value=0.07; // quiet — subtle
+    master.connect(ac.destination);
+
+    // Low-pass filter to soften harsh harmonics
+    const lpf=ac.createBiquadFilter();
+    lpf.type='lowpass';lpf.frequency.value=900;lpf.Q.value=1.2;
+    lpf.connect(master);
+
+    // 3 cry bursts: "wah... wah... waahh"
+    [[0, 480, 640, 0.55], [0.75, 460, 620, 0.5], [1.6, 440, 700, 0.85]].forEach(([t,f0,f1,dur])=>{
       const osc=ac.createOscillator();
-      const gain=ac.createGain();
-      const lfo=ac.createOscillator();
-      const lfoGain=ac.createGain();
-      lfo.frequency.value=4;lfoGain.gain.value=180;
-      lfo.connect(lfoGain);lfoGain.connect(osc.frequency);
-      osc.type='sine';osc.frequency.value=520;
-      gain.gain.setValueAtTime(0,ac.currentTime+t);
-      gain.gain.linearRampToValueAtTime(0.12,ac.currentTime+t+0.1);
-      gain.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+t+0.5);
-      osc.connect(gain);gain.connect(ac.destination);
-      lfo.start(ac.currentTime+t);osc.start(ac.currentTime+t);
-      lfo.stop(ac.currentTime+t+0.5);osc.stop(ac.currentTime+t+0.55);
+      const g=ac.createGain();
+      osc.type='sawtooth';
+      // Pitch rises then falls (wah shape)
+      osc.frequency.setValueAtTime(f0,ac.currentTime+t);
+      osc.frequency.linearRampToValueAtTime(f1,ac.currentTime+t+dur*0.45);
+      osc.frequency.linearRampToValueAtTime(f0*0.9,ac.currentTime+t+dur);
+      // Amplitude envelope — soft attack, gentle decay
+      g.gain.setValueAtTime(0,ac.currentTime+t);
+      g.gain.linearRampToValueAtTime(1,ac.currentTime+t+0.08);
+      g.gain.setValueAtTime(1,ac.currentTime+t+dur*0.5);
+      g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+t+dur);
+      osc.connect(g);g.connect(lpf);
+      osc.start(ac.currentTime+t);osc.stop(ac.currentTime+t+dur+0.05);
     });
   }catch(e){}
 }
@@ -1195,17 +1236,24 @@ function playCrySound(){
 function playGrumpySound(){
   try{
     const ac=getACtx();
-    // Dissonant grumpy low rumble
-    [0,0.4,0.8,1.3,1.8].forEach((t,i)=>{
+    const master=ac.createGain();
+    master.gain.value=0.06;
+    master.connect(ac.destination);
+    const lpf=ac.createBiquadFilter();
+    lpf.type='lowpass';lpf.frequency.value=600;
+    lpf.connect(master);
+    // Low grumbly moans — discomfort
+    [[0,220,0.4],[0.55,200,0.5],[1.2,190,0.6],[1.9,210,0.45]].forEach(([t,freq,dur])=>{
       const osc=ac.createOscillator();
-      const gain=ac.createGain();
+      const g=ac.createGain();
       osc.type='sawtooth';
-      osc.frequency.value=160-i*12;
-      gain.gain.setValueAtTime(0,ac.currentTime+t);
-      gain.gain.linearRampToValueAtTime(0.08,ac.currentTime+t+0.08);
-      gain.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+t+0.35);
-      osc.connect(gain);gain.connect(ac.destination);
-      osc.start(ac.currentTime+t);osc.stop(ac.currentTime+t+0.4);
+      osc.frequency.setValueAtTime(freq,ac.currentTime+t);
+      osc.frequency.linearRampToValueAtTime(freq*0.88,ac.currentTime+t+dur);
+      g.gain.setValueAtTime(0,ac.currentTime+t);
+      g.gain.linearRampToValueAtTime(1,ac.currentTime+t+0.06);
+      g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+t+dur);
+      osc.connect(g);g.connect(lpf);
+      osc.start(ac.currentTime+t);osc.stop(ac.currentTime+t+dur+0.05);
     });
   }catch(e){}
 }
