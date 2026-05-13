@@ -12,7 +12,7 @@
   --floor:#f5e6c8;--wall:#ffe8d0;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{width:100%;height:100%;background:#e8e8e8;display:flex;justify-content:center;overflow:hidden;font-family:'Nunito',sans-serif;touch-action:none;}
+html,body{width:100%;height:100%;background:#e8e8e8;display:flex;justify-content:center;font-family:'Nunito',sans-serif;touch-action:none;overflow:hidden;}
 #app{width:100%;max-width:440px;height:100dvh;position:relative;overflow:hidden;background:#fff;}
 #gc{display:block;width:100%;height:100%;}
 
@@ -45,10 +45,10 @@ canvas.life-btl.lost{opacity:.25;filter:grayscale(.8);}
 #milestone .ms-txt{font-family:'Fredoka One',cursive;font-size:1.1rem;color:#e65100;}
 
 /* Overlays */
-.ov{display:none;position:absolute;inset:0;z-index:50;background:rgba(50,35,25,.65);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:12px;overflow-y:auto;}
+.ov{display:none;position:fixed;inset:0;z-index:600;background:rgba(50,35,25,.65);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:12px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .ov.open{display:flex;}
 .card{background:linear-gradient(160deg,#fffdf8,#fef5e8);border-radius:26px;padding:22px 16px;width:100%;max-width:340px;
-  box-shadow:0 20px 60px rgba(0,0,0,.3);border:3px solid #f0ddc8;max-height:90dvh;overflow-y:auto;text-align:center;}
+  box-shadow:0 20px 60px rgba(0,0,0,.3);border:3px solid #f0ddc8;max-height:88dvh;overflow-y:auto;text-align:center;-webkit-overflow-scrolling:touch;}
 .card-title{font-family:'Fredoka One',cursive;font-size:1.7rem;color:var(--text);margin-bottom:4px;}
 .card-emoji{font-size:3.2rem;display:block;margin-bottom:4px;line-height:1.2;}
 .card-sub{font-size:.82rem;color:#7d6258;margin-bottom:12px;line-height:1.5;}
@@ -139,6 +139,71 @@ canvas.life-btl.lost{opacity:.25;filter:grayscale(.8);}
   text-shadow:0 2px 5px rgba(0,0,0,.2);animation:ftup .9s ease-out forwards;}
 @keyframes ftup{0%{opacity:1;transform:translateY(0) scale(1)}60%{opacity:1;transform:translateY(-24px) scale(1.1)}100%{opacity:0;transform:translateY(-52px) scale(.9)}}
 @keyframes bba{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+
+/* ── WELCOME PAGE FULL-SCREEN ── */
+#screen-welcome{
+  position:fixed;inset:0;z-index:500;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:env(safe-area-inset-top, 28px) 20px env(safe-area-inset-bottom, 36px);
+  padding-top:max(28px,env(safe-area-inset-top));
+  padding-bottom:max(36px,env(safe-area-inset-bottom));
+  background:linear-gradient(160deg,#fff9f2 0%,#fef5e8 60%,#fce8d4 100%);
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+#screen-welcome.hidden{display:none;}
+.wlc-hero{font-size:clamp(2rem,9vw,3.2rem);font-weight:900;
+  font-family:'Fredoka One',cursive;color:var(--text);
+  letter-spacing:1px;line-height:1;margin-bottom:4px;text-align:center;}
+.wlc-sub{font-size:.8rem;color:#b09080;letter-spacing:1.5px;text-transform:uppercase;
+  margin-bottom:20px;text-align:center;}
+.wlc-icons{font-size:1.8rem;letter-spacing:6px;margin-bottom:12px;opacity:.85;}
+.leader-nudge{background:#fff8f0;border:1.5px solid #f0ddc8;border-radius:14px;
+  padding:11px 14px;margin-bottom:18px;font-size:.82rem;color:#7d6258;
+  text-align:center;line-height:1.6;max-width:320px;display:none;}
+.referral-banner{background:linear-gradient(135deg,#fff3e0,#ffe0b2);border:2px solid #ffb74d;
+  border-radius:14px;padding:13px 16px;margin-bottom:16px;max-width:320px;
+  font-size:.82rem;text-align:center;line-height:1.6;display:none;}
+.wlc-btns{display:flex;flex-direction:column;gap:10px;width:100%;max-width:320px;}
+.wb{width:100%;padding:14px;border-radius:50px;font-size:1rem;font-weight:800;
+  font-family:'Fredoka One',cursive;cursor:pointer;border:none;
+  transition:transform .12s,box-shadow .12s;-webkit-appearance:none;letter-spacing:.3px;}
+.wb:active{transform:scale(.97);}
+.wb-primary{background:linear-gradient(135deg,#ff8a65,#ff6035);color:#fff;
+  box-shadow:0 6px 24px rgba(255,96,53,.38);}
+.wb-outline{background:transparent;border:2px solid #e0cfc0;color:#7d6258;}
+.wb-green{background:transparent;border:2px solid #4cba6f;color:#2a7d3f;}
+
+/* ── HOW TO PLAY OVERLAY ── */
+#ov-rules .card{text-align:left;padding:0;max-height:88dvh;}
+.rules-hdr{padding:14px 18px;border-bottom:2px solid #f0ddc8;display:flex;align-items:center;gap:10px;position:sticky;top:0;background:#fffdf8;z-index:5;border-radius:26px 26px 0 0;}
+.rules-hdr h2{font-family:'Fredoka One',cursive;font-size:1.2rem;color:var(--text);flex:1;}
+.back-btn{background:none;border:none;color:var(--accent);font-size:1.3rem;cursor:pointer;padding:4px 8px;font-weight:800;}
+.rules-body{padding:18px;overflow-y:auto;}
+.rs{margin-bottom:20px;}
+.rs h3{font-size:.85rem;font-weight:800;color:var(--accent);margin-bottom:7px;}
+.rs p,.rs li{font-size:.8rem;color:#7d6258;line-height:1.8;}
+.rs ul{padding-left:16px;}
+.rs li{margin-bottom:2px;}
+.rt{width:100%;border-collapse:collapse;margin-top:7px;font-size:.75rem;}
+.rt th{color:#b09080;font-weight:700;font-size:.68rem;letter-spacing:.6px;padding:6px 8px;text-align:left;border-bottom:1.5px solid #f0ddc8;}
+.rt td{color:#7d6258;padding:6px 8px;border-bottom:1px solid #f8f0e8;}
+.badge-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px;}
+.badge-card{background:#fdf6ee;border:1.5px solid #f0ddc8;border-radius:10px;padding:8px 10px;font-size:.72rem;color:#7d6258;}
+.badge-card b{color:var(--accent);display:block;margin-bottom:2px;font-size:.78rem;}
+.rules-play-btn{width:100%;padding:13px;border-radius:50px;background:linear-gradient(135deg,#ff8a65,#ff6035);
+  color:#fff;font-size:1rem;font-weight:900;font-family:'Fredoka One',cursive;border:none;cursor:pointer;margin:8px 0 20px;}
+
+/* ── LOGIN OVERLAY ── */
+.flabel{display:block;font-size:.72rem;font-weight:800;color:#7d6258;margin-bottom:4px;margin-top:10px;}
+.wbox-bw{background:#f0fdf4;border:1.5px solid #a5d6a7;border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:.8rem;color:#2e7d32;}
+.errbox-bw{color:#e53935;font-size:.75rem;margin-bottom:8px;display:none;text-align:left;padding:8px 10px;background:#fce4ec;border-radius:8px;}
+
+/* ── LEADERBOARD — "YOU" highlight + share ── */
+.lb-you td{background:linear-gradient(135deg,#fff3e0,#ffe8d0) !important;}
+.lb-you .lb-rank{color:var(--accent);}
+.lb-rank-line{font-size:.78rem;color:#9e7a6a;margin-bottom:8px;text-align:center;min-height:18px;}
+.lb-share-wrap{margin:10px 0;}
 </style>
 </head>
 <body>
@@ -171,21 +236,94 @@ canvas.life-btl.lost{opacity:.25;filter:grayscale(.8);}
 </div>
 <div id="toast"></div>
 
-<!-- WELCOME -->
-<div class="ov open" id="ov-welcome">
-  <div class="card">
-    <span class="card-emoji" style="animation:bba 1s ease-in-out infinite">👶</span>
-    <div class="card-title">Baby Watch! 👶</div>
-    <div class="card-sub">Baby crawls through 3 lanes at home! Collect healthy food, dodge junk. You have <b>3 elixir lives</b>. Lose all 3 or drain energy = game over!</div>
-    <div class="food-preview">
-      <span class="fp g">🍎 Apple</span><span class="fp g">🥦 Veggie</span>
-      <span class="fp g">🍌 Banana</span><span class="fp g">🥕 Carrot</span>
-      <span class="fp b">🍭 Candy</span><span class="fp b">🍟 Fries</span>
-      <span class="fp b">🥤 Soda</span><span class="fp b">🍫 Choco</span>
+<!-- HOW TO PLAY / RULES -->
+<div class="ov" id="ov-rules">
+  <div class="card" style="padding:0;">
+    <div class="rules-hdr">
+      <button class="back-btn" onclick="showWelcome()">←</button>
+      <h2>📖 How to Play Baby Watch</h2>
     </div>
-    <button class="btn-p" onclick="startGame()">▶ Start Crawling!</button>
-    <button class="btn-s" onclick="openLB()">🏆 Leaderboard</button>
-    <div style="font-size:.62rem;color:#b09080;margin-top:3px;">Tap left or right side to switch lane</div>
+    <div class="rules-body">
+      <div class="rs">
+        <h3>🎯 Objective</h3>
+        <p>Guide baby crawling through 3 lanes at home. Collect healthy food to keep energy high. Avoid junk food — eating 3 pieces of junk costs a life. Run as far as you can!</p>
+      </div>
+      <div class="rs">
+        <h3>🎮 Controls</h3>
+        <ul>
+          <li><b>Tap left side</b> of screen → move baby one lane left</li>
+          <li><b>Tap right side</b> → move baby one lane right</li>
+          <li><b>Swipe left/right</b> → also changes lane</li>
+          <li>Arrow keys work on desktop</li>
+        </ul>
+      </div>
+      <div class="rs">
+        <h3>🍎 Healthy Food (collect!)</h3>
+        <table class="rt">
+          <tr><th>Food</th><th>Energy</th></tr>
+          <tr><td>🥚 Egg</td><td style="color:#4cba6f">+22</td></tr>
+          <tr><td>🥦 Broccoli</td><td style="color:#4cba6f">+20</td></tr>
+          <tr><td>🥛 Milk</td><td style="color:#4cba6f">+20</td></tr>
+          <tr><td>🍎 Apple</td><td style="color:#4cba6f">+18</td></tr>
+          <tr><td>🥕 Carrot</td><td style="color:#4cba6f">+17</td></tr>
+        </table>
+      </div>
+      <div class="rs">
+        <h3>🍭 Junk Food (avoid!)</h3>
+        <table class="rt">
+          <tr><th>Food</th><th>Effect</th></tr>
+          <tr><td>🥤 Soda</td><td style="color:#e84545">−25 energy + lose life</td></tr>
+          <tr><td>🍟 Fries</td><td style="color:#e84545">−22 energy + lose life</td></tr>
+          <tr><td>🍭 Candy</td><td style="color:#e84545">−20 energy + lose life</td></tr>
+        </table>
+      </div>
+      <div class="rs">
+        <h3>🍼 Elixir Lives</h3>
+        <ul>
+          <li>You start with <b>3 Elixir lives</b> (shown as bottles in HUD)</li>
+          <li>Each junk food eaten = <b>−1 life</b></li>
+          <li>Lose all 3 → Baby gets sick! Game over</li>
+          <li>Reach <b>2000m</b> → Bonus life restored!</li>
+        </ul>
+      </div>
+      <div class="rs">
+        <h3>⚡ Energy Bar</h3>
+        <ul>
+          <li>Energy drains slowly as baby crawls</li>
+          <li>Healthy food restores energy</li>
+          <li>Energy hits zero → Baby exhausted! Game over</li>
+        </ul>
+      </div>
+      <div class="rs">
+        <h3>🏅 Leaderboard & Badges</h3>
+        <div class="badge-grid">
+          <div class="badge-card"><b>🥇 Champion!</b>Score ≥ 3,000</div>
+          <div class="badge-card"><b>🥈 Super Parent</b>Score ≥ 1,500</div>
+          <div class="badge-card"><b>🥉 Good Start!</b>Score ≥ 700</div>
+          <div class="badge-card"><b>🌟 Keep Going</b>Under 700 — try again!</div>
+        </div>
+      </div>
+      <button class="rules-play-btn" onclick="closeAllOv();startGameFromWelcome()">▶ Start Crawling!</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div class="ov" id="ov-login">
+  <div class="card">
+    <div style="font-size:2.2rem;margin-bottom:6px;text-align:center;">🏅</div>
+    <div class="card-title" style="text-align:center;">Login to Baby Watch</div>
+    <div class="card-sub" style="text-align:center;">Save scores &amp; join the leaderboard</div>
+    <div id="lf-new-bw">
+      <label class="flabel">👤 Your Name</label>
+      <input class="form-i" id="li-name" type="text" placeholder="e.g. Priya / Rahul" maxlength="40" autocomplete="name">
+      <label class="flabel">📱 Mobile Number</label>
+      <input class="form-i" id="li-phone" type="tel" placeholder="+91 98765 43210" maxlength="15" autocomplete="tel">
+      <div style="font-size:.7rem;color:#b09080;margin:6px 0 12px;">Your name is saved on this device for faster login next time.</div>
+    </div>
+    <div class="errbox-bw" id="li-err"></div>
+    <button class="btn-p" style="width:100%;margin-bottom:8px;" id="li-btn" onclick="submitLogin()">✅ Login &amp; Play</button>
+    <button class="btn-s" style="width:100%;font-size:.82rem;" onclick="closeAllOv();startGameFromWelcome()">Skip — Play as Guest</button>
   </div>
 </div>
 
@@ -238,22 +376,27 @@ canvas.life-btl.lost{opacity:.25;filter:grayscale(.8);}
     <div id="rank-info" style="display:none;margin-bottom:8px;"></div>
     <button class="btn-p" onclick="startGame()">▶ Play Again</button>
     <button class="btn-s" onclick="openLB()">🏆 Leaderboard</button>
-    <button class="btn-s" onclick="showOv('ov-welcome')">🏠 Home</button>
+    <button class="btn-s" onclick="showWelcome()">🏠 Home</button>
   </div>
 </div>
 
 <!-- LEADERBOARD -->
 <div class="ov" id="ov-lb">
   <div class="card">
-    <div class="card-title">🏆 Leaderboard</div>
+    <div class="card-title">🏆 Global Leaderboard</div>
+    <div class="lb-rank-line" id="lb-rank-line"></div>
     <div class="lb-tabs">
-      <button class="lb-tab on" onclick="lbTab('daily',this)">Daily</button>
-      <button class="lb-tab" onclick="lbTab('weekly',this)">Weekly</button>
-      <button class="lb-tab" onclick="lbTab('monthly',this)">Monthly</button>
+      <button class="lb-tab on" onclick="lbTab('daily',this)">Today</button>
+      <button class="lb-tab" onclick="lbTab('weekly',this)">This Week</button>
+      <button class="lb-tab" onclick="lbTab('monthly',this)">This Month</button>
     </div>
     <div id="lb-content"><div style="text-align:center;padding:20px;"><div class="spinner"></div></div></div>
-    <button class="btn-p" style="margin-top:10px;" onclick="startGame()">▶ Play</button>
-    <button class="btn-s" onclick="showOv('ov-welcome')">🏠 Home</button>
+    <div class="lb-share-wrap" id="lb-share-wrap" style="display:none">
+      <div class="share-label">👶 Challenge friends to beat your score!</div>
+      <div class="share-row" id="lb-share-btns" style="margin-bottom:0"></div>
+    </div>
+    <button class="btn-p" style="margin-top:10px;" onclick="startGameFromWelcome()">▶ Play Again</button>
+    <button class="btn-s" onclick="showWelcome()">🏠 Home</button>
   </div>
 </div>
 
@@ -273,7 +416,7 @@ canvas.life-btl.lost{opacity:.25;filter:grayscale(.8);}
     </div>
     <button class="btn-p" onclick="showOv('ov-go')" style="background:linear-gradient(135deg,#42a5f5,#1e88e5);box-shadow:0 5px 14px rgba(30,136,229,.4);">💾 Save Score</button>
     <button class="btn-s" onclick="startGame()">▶ Play Again</button>
-    <button class="btn-s" onclick="showOv('ov-welcome')">🏠 Home</button>
+    <button class="btn-s" onclick="showWelcome()">🏠 Home</button>
   </div>
 </div>
 
@@ -293,7 +436,7 @@ canvas.life-btl.lost{opacity:.25;filter:grayscale(.8);}
     </div>
     <button class="btn-p" onclick="showOv('ov-go')" style="background:linear-gradient(135deg,#ba68c8,#8e24aa);box-shadow:0 5px 14px rgba(142,36,170,.4);">💾 Save Score</button>
     <button class="btn-s" onclick="startGame()">▶ Play Again</button>
-    <button class="btn-s" onclick="showOv('ov-welcome')">🏠 Home</button>
+    <button class="btn-s" onclick="showWelcome()">🏠 Home</button>
   </div>
 </div>
 </div>
@@ -301,7 +444,8 @@ canvas.life-btl.lost{opacity:.25;filter:grayscale(.8);}
 <script>
 // ═══════════════════════════════════════════════════
 const GAS_URL='https://script.google.com/macros/s/AKfycbz-al-DyFrBMHAt8knt6UalkYtDHTQm2n9yny9NWg75okkB_altQWd2P-pYbWC0R4w16w/exec';
-const GAME_URL=window.location.href;
+const GAME_URL=window.location.href.split('?')[0];
+const WA_GROUP_URL='https://chat.whatsapp.com/REPLACE_WITH_YOUR_GROUP_LINK'; // ← replace with your group link
 
 const GOOD=[
   {e:'🍎',en:18},{e:'🍌',en:15},{e:'🥦',en:20},{e:'🥕',en:17},
@@ -386,11 +530,46 @@ function startGame(){
   RAF=requestAnimationFrame(loop);
 }
 function stopGame(){if(G)G.running=false;if(RAF){cancelAnimationFrame(RAF);RAF=null;}}
-function quitHome(){stopGame();showOv('ov-welcome');}
+function quitHome(){stopGame();showWelcome();}
 
-// ── Overlays ────────────────────────────────────────
+// ── Welcome page & overlays ─────────────────────────
+function showWelcome(){
+  closeAllOv();
+  document.getElementById('screen-welcome').classList.remove('hidden');
+}
+function hideWelcome(){
+  document.getElementById('screen-welcome').classList.add('hidden');
+}
 function showOv(id){closeAllOv();document.getElementById(id).classList.add('open');}
 function closeAllOv(){document.querySelectorAll('.ov').forEach(o=>o.classList.remove('open'));}
+function openRulesOv(){showOv('ov-rules');}
+function openLoginOv(){showOv('ov-login');}
+function startGameFromWelcome(){hideWelcome();closeAllOv();startGame();}
+function joinWAGroup(){window.open(WA_GROUP_URL,'_blank');}
+
+// ── Login (name+phone saved to localStorage) ─────────
+function submitLogin(){
+  const name=document.getElementById('li-name').value.trim();
+  const phone=document.getElementById('li-phone').value.trim();
+  const err=document.getElementById('li-err');
+  err.style.display='none';
+  if(!name){err.textContent='Please enter your name';err.style.display='block';return;}
+  if(!phone){err.textContent='Please enter your phone number';err.style.display='block';return;}
+  localStorage.setItem('bdr_name',name);
+  localStorage.setItem('bdr_phone',phone);
+  document.getElementById('li-btn').textContent='✅ Logged in!';
+  setTimeout(()=>{closeAllOv();startGameFromWelcome();},600);
+}
+
+// Pre-fill login form on open
+function openLoginOv(){
+  document.getElementById('li-name').value=localStorage.getItem('bdr_name')||'';
+  document.getElementById('li-phone').value=localStorage.getItem('bdr_phone')||'';
+  document.getElementById('li-err').style.display='none';
+  document.getElementById('li-btn').textContent='✅ Login & Play';
+  showOv('ov-login');
+}
+
 function togglePause(){
   if(!G)return;
   G.paused=!G.paused;
@@ -1349,17 +1528,37 @@ function lbTab(tab,el){
   renderLB(tab,lbCache||[]);
 }
 function renderLB(tab,raw){
-  // MedCrush GAS returns {daily:[],weekly:[],monthly:[]} already aggregated
   const data=raw&&raw[tab]?raw[tab]:[];
-  const flt=data.slice(0,20);
+  const flt=data.slice(0,50);
   const ct=document.getElementById('lb-content');
   if(!flt.length){ct.innerHTML='<div class="lb-empty">No scores yet for this period!<br>Be the first 🏆</div>';return;}
+  const myPhone=localStorage.getItem('bdr_phone')||'';
+  const myName=(localStorage.getItem('bdr_name')||'').toLowerCase();
   const M=['🥇','🥈','🥉'];
   let hh='<table class="lb-tbl"><thead><tr><th>#</th><th>Name</th><th>Score</th></tr></thead><tbody>';
+  let myRank=-1;
   flt.forEach((r,i)=>{
-    hh+=`<tr class="${i<3?'r'+(i+1):''}"><td class="lb-rank">${M[i]||i+1}</td><td>${esc(r.name)}</td><td>${Number(r.score).toLocaleString()}</td></tr>`;
+    const isYou=myPhone&&String(r.phone)===myPhone;
+    if(isYou)myRank=i+1;
+    const rowCls=(i<3?'r'+(i+1):'')+(isYou?' lb-you':'');
+    const nameCell=esc(r.name)+(isYou?' <span style="background:#ff784e;color:#fff;font-size:.62rem;padding:1px 6px;border-radius:10px;margin-left:4px;font-weight:800;">YOU</span>':'');
+    hh+=`<tr class="${rowCls}"><td class="lb-rank">${M[i]||i+1}</td><td>${nameCell}</td><td>${Number(r.score).toLocaleString()}</td></tr>`;
   });
   hh+='</tbody></table>';ct.innerHTML=hh;
+  // Rank line
+  const rl=document.getElementById('lb-rank-line');
+  if(rl){
+    if(myRank>0) rl.innerHTML=`You are <b style="color:var(--accent)">#${myRank}</b> on ${tab==='daily'?"Today's":tab==='weekly'?"This Week's":"This Month's"} leaderboard 🏅`;
+    else if(myPhone) rl.textContent='Play & save to see your rank here!';
+    else rl.textContent='Login to track your rank';
+  }
+  // Show share in leaderboard if user known
+  const sw=document.getElementById('lb-share-wrap');
+  if(sw&&myPhone){
+    const sc=G?Math.floor(G.score):0;
+    buildBWShareBtns('lb-share-btns',sc||(data.find(r=>r.phone===myPhone)||{}).score||0);
+    sw.style.display='';
+  }
 }
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 
@@ -1402,12 +1601,90 @@ function showToast(msg,dur=2500){
   if(toastT)clearTimeout(toastT);toastT=setTimeout(()=>{el.style.display='none';},dur);
 }
 
+// ── REFERRAL BONUS ───────────────────────────────────
+function checkReferral(){
+  const ref=new URLSearchParams(window.location.search).get('ref');
+  if(!ref)return;
+  const stats=getBWStats();
+  if(stats.totalGames>0)return; // existing player, no bonus
+  const refName=decodeURIComponent(ref).trim();
+  const el=document.getElementById('referral-banner');
+  if(el){
+    el.innerHTML=`🎁 <b>${esc(refName)} challenged you!</b><br><span style="font-size:.78rem;color:#8d6540;">Start crawling and beat their score!</span>`;
+    el.style.display='block';
+  }
+}
+
+function buildBWReferralURL(name){
+  return GAME_URL+'?ref='+encodeURIComponent(name);
+}
+
+function showLeaderNudge(){
+  const data=lbCache&&lbCache.weekly||[];
+  if(!data.length)return;
+  const top=data[0];
+  const el=document.getElementById('leader-nudge');
+  if(el){
+    el.innerHTML=`🏆 <b>${esc(top.name)}</b> is leading with <b style="color:var(--accent)">${Number(top.score).toLocaleString()} pts</b> this week. Can you beat them?`;
+    el.style.display='block';
+  }
+}
+
+// Override buildBWShareBtns to use referral URL
+const _origBuildShare=buildBWShareBtns;
+window.buildBWShareBtns=function(containerId,score){
+  const el=document.getElementById(containerId);
+  if(!el)return;
+  const name=(localStorage.getItem('bdr_name')||'A Friend').trim();
+  const refURL=name!=='A Friend'?buildBWReferralURL(name):GAME_URL;
+  const msg=`👶 ${name} scored ${score.toLocaleString()} pts on Baby Watch! Can you beat them?\nPlay here: ${refURL}`;
+  window._bwShare={msg,score,name,refURL};
+  const hasNative=!!navigator.share;
+  el.innerHTML=`
+    <button class="sbtn sbtn-tg" onclick="bwShareTG()">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.820 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+      Telegram
+    </button>
+    <button class="sbtn sbtn-wa" onclick="bwShareWA()">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.98 0C5.366 0 .014 5.337.014 11.935c0 2.098.549 4.14 1.595 5.945L0 24l6.335-1.652a12.01 12.01 0 005.64 1.424h.006C18.594 23.772 24 18.435 24 11.837 24 5.337 18.594 0 11.98 0zm0 21.785a9.953 9.953 0 01-5.031-1.362l-.361-.214-3.741.976.998-3.648-.235-.374a9.875 9.875 0 01-1.514-5.303c0-5.487 4.483-9.952 9.99-9.952 5.507 0 9.99 4.465 9.99 9.952-.006 5.487-4.489 9.925-9.996 9.925z"/></svg>
+      WhatsApp
+    </button>
+    ${hasNative?`<button class="sbtn sbtn-native" onclick="bwShareNative()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Share</button>`:''}
+    <button class="sbtn sbtn-copy" onclick="bwShareCopy()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy Link</button>`;
+}
+
 // ── INIT ─────────────────────────────────────────────
 resize();
 window.addEventListener('resize',()=>{resize();if(G&&G.running)layoutLanes();});
 // Pre-fill name
 document.getElementById('inp-name').value=localStorage.getItem('bdr_name')||'';
 document.getElementById('inp-phone').value=localStorage.getItem('bdr_phone')||'';
+// Referral & leader nudge on load
+checkReferral();
+fetchLB().then(()=>showLeaderNudge()).catch(()=>{});
 </script>
+<!-- WELCOME FULL-SCREEN -->
+<div id="screen-welcome">
+  <div class="wlc-icons">👶 🍎 🥦 🍭 🍌 🥕</div>
+  <div class="wlc-hero">Baby Watch</div>
+  <div class="wlc-sub">Crawl · Eat Right · Grow Strong</div>
+
+  <!-- Leader nudge (populated by JS) -->
+  <div class="leader-nudge" id="leader-nudge"></div>
+  <!-- Referral banner (populated by JS) -->
+  <div class="referral-banner" id="referral-banner"></div>
+
+  <div class="wlc-btns">
+    <button class="wb wb-primary" onclick="startGameFromWelcome()">▶ Start Crawling!</button>
+    <button class="wb wb-outline" onclick="openLoginOv()">🏅 Login &amp; Save Scores</button>
+    <button class="wb wb-outline" onclick="openRulesOv()">📖 How to Play &amp; Rules</button>
+    <button class="wb wb-outline" onclick="openLB()">🏆 Leaderboard</button>
+    <button class="wb wb-green" onclick="joinWAGroup()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="display:inline;vertical-align:middle;margin-right:5px;"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+      Join Champions Group
+    </button>
+  </div>
+  <div style="font-size:.62rem;color:#c0a898;margin-top:16px;text-align:center;">Tap left/right side to switch lane during play</div>
+</div>
 </body>
 </html>
