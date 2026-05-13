@@ -72,20 +72,26 @@ canvas.life-btl.lost{opacity:.25;filter:grayscale(.8);}
   padding:9px;font-size:.88rem;font-weight:800;cursor:pointer;margin-bottom:7px;-webkit-appearance:none;}
 .btn-s:active{background:#fff5ee;}
 
-/* Share buttons — MedCrush style big icon squares */
+/* Share buttons — MedCrush sbtn style */
 .share-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;}
-.share-btn{
-  border:none;border-radius:18px;padding:0;cursor:pointer;
+.share-label{font-size:11px;color:#9e8a7a;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;text-align:center;}
+.sbtn{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:5px;width:72px;height:68px;font-size:.68rem;font-weight:800;
-  -webkit-appearance:none;transition:transform .12s,box-shadow .12s;
-  box-shadow:0 4px 12px rgba(0,0,0,.18);letter-spacing:.3px;}
-.share-btn:active{transform:scale(.93);box-shadow:0 2px 6px rgba(0,0,0,.15);}
-.share-btn svg{display:block;}
-.sh-wa{background:#25d366;color:#fff;}
-.sh-tg{background:#2ca5e0;color:#fff;}
-.sh-copy{background:#4a4a5a;color:#fff;}
-.sh-native{background:#ff784e;color:#fff;}
+  gap:6px;padding:14px 10px;border-radius:16px;
+  font-size:11px;font-weight:700;cursor:pointer;border:none;
+  transition:transform .15s,box-shadow .15s;
+  min-width:80px;letter-spacing:.3px;-webkit-appearance:none;}
+.sbtn:active{transform:scale(.94);}
+.sbtn svg{width:26px;height:26px;}
+.sbtn-tg{background:linear-gradient(145deg,#2aabee,#1e96d1);color:#fff;box-shadow:0 4px 18px rgba(42,171,238,.35);}
+.sbtn-tg:hover{box-shadow:0 6px 24px rgba(42,171,238,.5);}
+.sbtn-wa{background:linear-gradient(145deg,#1fbe5a,#128c3e);color:#fff;box-shadow:0 4px 18px rgba(18,140,62,.35);}
+.sbtn-wa:hover{box-shadow:0 6px 24px rgba(18,140,62,.5);}
+.sbtn-copy{background:#f5ede0;color:#7d5a40;border:1.5px solid #e8d5c0;box-shadow:0 2px 10px rgba(0,0,0,.08);}
+.sbtn-copy:hover{border-color:#ff784e;color:#ff784e;}
+.sbtn-native{background:linear-gradient(145deg,#ff9a6c,#ff6035);color:#fff;box-shadow:0 4px 18px rgba(255,107,53,.35);}
+/* Insights box */
+.bw-insights{background:#fdf6ee;border:1.5px solid #f0ddc8;border-radius:12px;padding:11px 13px;margin-bottom:12px;text-align:left;font-size:12.5px;line-height:1.75;color:#7d6258;}
 
 /* Leaderboard */
 .lb-tabs{display:flex;gap:5px;margin-bottom:10px;justify-content:center;}
@@ -208,24 +214,12 @@ canvas.life-btl.lost{opacity:.25;filter:grayscale(.8);}
       <div class="stat"><div class="stat-v" id="go-bd">0</div><div class="stat-l">Junk</div></div>
     </div>
     <div id="go-badge"></div>
+    <!-- Performance insights -->
+    <div class="bw-insights" id="bw-insights" style="display:none"></div>
     <!-- Share row -->
-    <div class="share-row" id="share-row" style="display:none">
-      <button class="share-btn sh-tg" onclick="shareScore('tg')">
-        <svg width="28" height="28" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="24" fill="#2ca5e0"/><path d="M10 23.5l25-10-4 22-7-7-5 4 1-8 15-13-17 10-8-1z" fill="#fff"/></svg>
-        Telegram
-      </button>
-      <button class="share-btn sh-wa" onclick="shareScore('wa')">
-        <svg width="28" height="28" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="24" fill="#25d366"/><path d="M34 29c-1-1-3-2-4-1l-2 1c-3-1-6-4-7-7l1-2c1-1 0-3-1-4l-3-4c-1-1-2-1-3 0-2 2-3 4-2 7 1 4 5 9 9 11 3 1 7 2 9 0 1-1 1-3 0-4l-2-1 5 4z" fill="#fff"/></svg>
-        WhatsApp
-      </button>
-      <button class="share-btn sh-copy" onclick="shareScore('copy')">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="8" y="8" width="13" height="13" rx="2" stroke="#fff" stroke-width="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2" stroke="#fff" stroke-width="2"/></svg>
-        Copy Link
-      </button>
-      <button class="share-btn sh-native" onclick="shareScore('native')" id="sh-native-btn" style="display:none">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Share
-      </button>
+    <div style="display:none" id="share-row">
+      <div class="share-label">👶 Challenge friends to beat your score!</div>
+      <div class="share-row" id="share-btns-inner" style="margin-bottom:0"></div>
     </div>
     <div id="save-wrap">
       <div style="font-size:.76rem;font-weight:800;color:#7d6258;margin-bottom:8px;">Save to leaderboard!</div>
@@ -273,10 +267,9 @@ canvas.life-btl.lost{opacity:.25;filter:grayscale(.8);}
       💛 Dear Parent — feed your little one at regular intervals. A happy tummy = a happy baby! Keep nutritious snacks handy. You're doing great! 🌟
     </div>
     <div id="tired-score-row" class="stat-row"></div>
-    <div class="share-row">
-      <button class="share-btn sh-tg" onclick="shareEndScore('tg')"><svg width="26" height="26" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="24" fill="#2ca5e0"/><path d="M10 23.5l25-10-4 22-7-7-5 4 1-8 15-13-17 10-8-1z" fill="#fff"/></svg>Telegram</button>
-      <button class="share-btn sh-wa" onclick="shareEndScore('wa')"><svg width="26" height="26" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="24" fill="#25d366"/><path d="M34 29c-1-1-3-2-4-1l-2 1c-3-1-6-4-7-7l1-2c1-1 0-3-1-4l-3-4c-1-1-2-1-3 0-2 2-3 4-2 7 1 4 5 9 9 11 3 1 7 2 9 0 1-1 1-3 0-4l-2-1 5 4z" fill="#fff"/></svg>WhatsApp</button>
-      <button class="share-btn sh-copy" onclick="shareEndScore('copy')"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="8" y="8" width="13" height="13" rx="2" stroke="#fff" stroke-width="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2" stroke="#fff" stroke-width="2"/></svg>Copy</button>
+    <div style="margin-bottom:10px">
+      <div class="share-label">👶 Challenge friends to beat your score!</div>
+      <div class="share-row" id="tired-share-inner" style="margin-bottom:0"></div>
     </div>
     <button class="btn-p" onclick="showOv('ov-go')" style="background:linear-gradient(135deg,#42a5f5,#1e88e5);box-shadow:0 5px 14px rgba(30,136,229,.4);">💾 Save Score</button>
     <button class="btn-s" onclick="startGame()">▶ Play Again</button>
@@ -294,10 +287,9 @@ canvas.life-btl.lost{opacity:.25;filter:grayscale(.8);}
       💜 Dear Parent — junk food upsets tiny tummies fast! Visit your nearby pharmacy or consult your paediatrician if discomfort continues. Baby loves healthy snacks! 🥕🍎
     </div>
     <div id="sick-score-row" class="stat-row"></div>
-    <div class="share-row">
-      <button class="share-btn sh-tg" onclick="shareEndScore('tg')"><svg width="26" height="26" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="24" fill="#2ca5e0"/><path d="M10 23.5l25-10-4 22-7-7-5 4 1-8 15-13-17 10-8-1z" fill="#fff"/></svg>Telegram</button>
-      <button class="share-btn sh-wa" onclick="shareEndScore('wa')"><svg width="26" height="26" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="24" fill="#25d366"/><path d="M34 29c-1-1-3-2-4-1l-2 1c-3-1-6-4-7-7l1-2c1-1 0-3-1-4l-3-4c-1-1-2-1-3 0-2 2-3 4-2 7 1 4 5 9 9 11 3 1 7 2 9 0 1-1 1-3 0-4l-2-1 5 4z" fill="#fff"/></svg>WhatsApp</button>
-      <button class="share-btn sh-copy" onclick="shareEndScore('copy')"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="8" y="8" width="13" height="13" rx="2" stroke="#fff" stroke-width="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2" stroke="#fff" stroke-width="2"/></svg>Copy</button>
+    <div style="margin-bottom:10px">
+      <div class="share-label">👶 Challenge friends to beat your score!</div>
+      <div class="share-row" id="tired-share-inner" style="margin-bottom:0"></div>
     </div>
     <button class="btn-p" onclick="showOv('ov-go')" style="background:linear-gradient(135deg,#ba68c8,#8e24aa);box-shadow:0 5px 14px rgba(142,36,170,.4);">💾 Save Score</button>
     <button class="btn-s" onclick="startGame()">▶ Play Again</button>
@@ -920,6 +912,15 @@ function showGO(reason){
   // Pre-fill from localStorage
   document.getElementById('inp-name').value=localStorage.getItem('bdr_name')||'';
   document.getElementById('inp-phone').value=localStorage.getItem('bdr_phone')||'';
+  // Record game + show insights
+  const {stats}=recordBWGame(score);
+  const lb=lbCache||{daily:[],weekly:[],monthly:[]};
+  const insEl=document.getElementById('bw-insights');
+  if(insEl){insEl.innerHTML=buildBWInsights(score,stats,lb.daily||[]);insEl.style.display='';}
+  // Build share buttons
+  buildBWShareBtns('share-btns-inner',score);
+  buildBWShareBtns('tired-share-inner',score);
+  buildBWShareBtns('sick-share-inner',score);
 }
 
 function showEndScreen(r){
@@ -1211,6 +1212,75 @@ function shareScore(method){
 }
 function shareEndScore(method){shareScore(method);}
 
+// ── LOCAL STATS (streak, personal best, total games) ─
+const bwls={
+  get:k=>{try{return JSON.parse(localStorage.getItem(k));}catch{return null;}},
+  set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
+};
+function getBWStats(){return bwls.get('bw_stats')||{best:0,totalGames:0,totalScore:0,streak:0,lastPlayDate:null};}
+function saveBWStats(s){bwls.set('bw_stats',s);}
+
+function recordBWGame(sc){
+  const s=getBWStats(),isNew=sc>s.best;
+  if(isNew)s.best=sc;
+  s.totalGames=(s.totalGames||0)+1;
+  s.totalScore=(s.totalScore||0)+sc;
+  const today=new Date().toDateString(),yest=new Date(Date.now()-86400000).toDateString();
+  if(s.lastPlayDate===today){}
+  else if(s.lastPlayDate===yest)s.streak=(s.streak||0)+1;
+  else s.streak=1;
+  s.lastPlayDate=today;
+  saveBWStats(s);
+  return{stats:s,isNew};
+}
+
+// ── PERFORMANCE INSIGHTS (MedCrush pattern) ───────────
+function buildBWInsights(sc,stats,lbDaily){
+  const lines=[],isFirst=stats.totalGames===1;
+  const prev=stats.totalScore-sc,pg=stats.totalGames-1;
+  const avg=pg>0?Math.round(prev/pg):0;
+  if(isFirst) lines.push('🎮 First crawl done! Most parents improve <b>40%+ by game 5.</b> Keep going!');
+  else if(avg>0){
+    const d=sc-avg,p=Math.round(Math.abs(d)/avg*100);
+    if(d>0) lines.push(`📈 <b>${p}% above your average!</b> Baby is in great form today!`);
+    else if(d<0) lines.push(`📉 <b>${p}% below your average.</b> You've crawled further before — one more try!`);
+  }
+  if(stats.streak>1) lines.push(`🔥 <b>${stats.streak}-day streak!</b> Consistency wins the leaderboard.`);
+  const gap=stats.best-sc;
+  if(!isFirst&&gap>0&&gap<500) lines.push(`🎯 Only <b>${gap} pts from your personal best!</b> So close — one more game!`);
+  if(lbDaily&&lbDaily.length){
+    const top=lbDaily[0];
+    if(Number(top.score)>sc) lines.push(`🏆 Daily #1 has <b>${Number(top.score).toLocaleString()} pts.</b> Save your score to compete!`);
+  }
+  if(!lines.length) lines.push('👶 Great crawl! Save your score to appear on the leaderboard.');
+  return lines.slice(0,3).join('<br>');
+}
+
+// ── SHARE BUTTONS (MedCrush sbtn pattern) ─────────────
+function buildBWShareBtns(containerId,score){
+  const el=document.getElementById(containerId);
+  if(!el)return;
+  const name=(localStorage.getItem('bdr_name')||'A Friend').trim();
+  const msg=`👶 ${name} scored ${score.toLocaleString()} pts on Baby Watch! Can you beat them?\nPlay here: ${GAME_URL}`;
+  window._bwShare={msg,score,name};
+  const hasNative=!!navigator.share;
+  el.innerHTML=`
+    <button class="sbtn sbtn-tg" onclick="bwShareTG()">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.820 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+      Telegram
+    </button>
+    <button class="sbtn sbtn-wa" onclick="bwShareWA()">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.98 0C5.366 0 .014 5.337.014 11.935c0 2.098.549 4.14 1.595 5.945L0 24l6.335-1.652a12.01 12.01 0 005.64 1.424h.006C18.594 23.772 24 18.435 24 11.837 24 5.337 18.594 0 11.98 0zm0 21.785a9.953 9.953 0 01-5.031-1.362l-.361-.214-3.741.976.998-3.648-.235-.374a9.875 9.875 0 01-1.514-5.303c0-5.487 4.483-9.952 9.99-9.952 5.507 0 9.99 4.465 9.99 9.952-.006 5.487-4.489 9.925-9.996 9.925z"/></svg>
+      WhatsApp
+    </button>
+    ${hasNative?`<button class="sbtn sbtn-native" onclick="bwShareNative()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Share</button>`:''}
+    <button class="sbtn sbtn-copy" onclick="bwShareCopy()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy Link</button>`;
+}
+function bwShareWA(){const d=window._bwShare;window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(d.msg),'_blank');}
+function bwShareTG(){const d=window._bwShare;window.open('https://t.me/share/url?url='+encodeURIComponent(GAME_URL)+'&text='+encodeURIComponent(d.msg),'_blank');}
+function bwShareNative(){const d=window._bwShare;if(navigator.share)navigator.share({title:'Baby Watch 👶',text:d.msg,url:GAME_URL});}
+function bwShareCopy(){const d=window._bwShare;navigator.clipboard.writeText(d.msg).then(()=>showToast('Copied! 📋')).catch(()=>showToast('Copy failed'));}
+
 // ── SOUNDS ───────────────────────────────────────────
 let audioCtx=null;
 function getACtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
@@ -1312,7 +1382,7 @@ async function submitScore(){
     if(data.status!=='ok') throw new Error(data.msg||'Save failed');
     document.getElementById('save-wrap').style.display='none';
     document.getElementById('save-ok').style.display='block';
-    document.getElementById('share-row').style.display='flex';
+    document.getElementById('share-row').style.display='';
     if(navigator.share) document.getElementById('sh-native-btn').style.display='';
     setTimeout(async()=>{
       const lb=await fetchLB();
